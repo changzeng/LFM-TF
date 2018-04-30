@@ -17,12 +17,12 @@ def get_div(a, b):
         return 0.0
     return a * 1.0 / b
 
-def shuffle_file(file_name):
-    with open(file_name, encoding="utf-8") as fd:
+def shuffle_file(origin, destination):
+    with open(origin, encoding="utf-8") as fd:
         txt = fd.read().strip()
         shuffle_result = txt.split("\n")
         shuffle(shuffle_result)
-    with open(file_name, "w", encoding="utf-8") as fd:
+    with open(destionation, "w", encoding="utf-8") as fd:
         fd.write("\n".join(shuffle_result))
 
 
@@ -30,6 +30,7 @@ class Trainer(object):
     def __init__(self, args):
         self.model_time = int(time.time()) if args.model_time == None else args.model_time
         self.model_path = "model/" + str(self.model_time) + "/"
+        self.model_data_path = self.model_path + "data/"
         self.checkpoint_path = self.model_path + "checkpoint/"
         self.summary_path = self.model_path + "summary/"
         self.max_epoch = args.max_epoch
@@ -48,7 +49,7 @@ class Trainer(object):
         return "hidden_dim:{}-batch_size:{}".format(self.hidden_dim, self.batch_size)
 
     def check_model_path(self):
-        for _path in ["model/", self.model_path, self.checkpoint_path, self.summary_path]:
+        for _path in ["model/", self.model_path, self.model_data_path, self.checkpoint_path, self.summary_path]:
             if not os.path.exists(_path):
                 os.mkdir(_path)
 
@@ -68,8 +69,8 @@ class Trainer(object):
                     print("cur_epoch/total_epoch: ({:3d}/{:3d}), global_step: {:4d}".format(epoch+1, self.max_epoch, global_step))
 
     def gen_batch(self, file_name):
-        shuffle_file(file_name)
-        with open(file_name, encoding="utf-8") as fd:
+        shuffle_file(file_name, self.model_data_path+file_name)
+        with open(self.data_path+file_name, encoding="utf-8") as fd:
             while True:
                 input_list = []
                 score_list = []
