@@ -22,7 +22,7 @@ def shuffle_file(origin, destination):
         txt = fd.read().strip()
         shuffle_result = txt.split("\n")
         shuffle(shuffle_result)
-    with open(destionation, "w", encoding="utf-8") as fd:
+    with open(destination, "w", encoding="utf-8") as fd:
         fd.write("\n".join(shuffle_result))
 
 
