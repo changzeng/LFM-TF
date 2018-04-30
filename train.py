@@ -44,6 +44,9 @@ class Trainer(object):
         self.lfm = LFM(user_num=args.user_num, item_num=args.item_num, batch_size=args.batch_size, hidden_dim=args.hidden_dim)
         self.check_model_path()
 
+    def model_parameter(self):
+        return "hidden_dim:{}-batch_size:{}".format(self.hidden_dim, self.batch_size)
+
     def check_model_path(self):
         for _path in ["model/", self.model_path, self.checkpoint_path, self.summary_path]:
             if not os.path.exists(_path):
@@ -60,7 +63,7 @@ class Trainer(object):
                     if global_step % self.validate_epoch == 0:
                         self.validate(sess)
                     if global_step % self.checkpoint_epoch == 0:
-                        self.lfm.save(sess, self.checkpoint_path+"model_{}.ckpt".format(int(time.time())), global_step)
+                        self.lfm.save(sess, self.checkpoint_path+self.model_parameter(), global_step)
                     file_writer.add_summary(summary, global_step)
                     print("cur_epoch/total_epoch: ({:3d}/{:3d}), global_step: {:4d}".format(epoch+1, self.max_epoch, global_step))
 
@@ -98,8 +101,8 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', type=int, default=500, help='batch size')
     parser.add_argument('--hidden_dim', type=int, default=20, help='hidden dim')
     parser.add_argument('--max_epoch', type=int, default=20, help='opoch num')
-    parser.add_argument('--validate_epoch', type=int, default=100, help='validate opoch num')
-    parser.add_argument('--checkpoint_epoch', type=int, default=200, help='checkpoint opoch num')
+    parser.add_argument('--validate_epoch', type=int, default=300, help='validate opoch num')
+    parser.add_argument('--checkpoint_epoch', type=int, default=500, help='checkpoint opoch num')
     parser.add_argument('--model_time', type=str, default=None, help='time when training new model')
     args = parser.parse_args()
 
