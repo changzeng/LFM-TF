@@ -18,7 +18,7 @@ def get_div(a, b):
     return a * 1.0 / b
 
 def shuffle_file(origin, destination):
-    with open(origin, encoding="utf-8") as fd:
+    with open("data/"+origin, encoding="utf-8") as fd:
         txt = fd.read().strip()
         shuffle_result = txt.split("\n")
         shuffle(shuffle_result)
@@ -70,7 +70,7 @@ class Trainer(object):
 
     def gen_batch(self, file_name):
         shuffle_file(file_name, self.model_data_path+file_name)
-        with open(self.data_path+file_name, encoding="utf-8") as fd:
+        with open(self.model_data_path+file_name, encoding="utf-8") as fd:
             while True:
                 input_list = []
                 score_list = []
@@ -95,8 +95,8 @@ class Trainer(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='LFM Model Training')
-    parser.add_argument('--train_data', type=str, default="data/data.train", help='training data')
-    parser.add_argument('--test_data', type=str, default="data/data.test", help='testing data')
+    parser.add_argument('--train_data', type=str, default="data.train", help='training data')
+    parser.add_argument('--test_data', type=str, default="data.test", help='testing data')
     parser.add_argument('--user_num', type=int, default=6040, help='user num')
     parser.add_argument('--item_num', type=int, default=3952, help='item num')
     parser.add_argument('--batch_size', type=int, default=500, help='batch size')
