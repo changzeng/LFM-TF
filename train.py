@@ -91,8 +91,8 @@ class Trainer(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='LFM Model Training')
-    parser.add_argument('--train_data', type=str, default="data.train", help='training data')
-    parser.add_argument('--test_data', type=str, default="data.test", help='testing data')
+    parser.add_argument('--train_data', type=str, default="data/data.train", help='training data')
+    parser.add_argument('--test_data', type=str, default="data/data.test", help='testing data')
     parser.add_argument('--user_num', type=int, default=6040, help='user num')
     parser.add_argument('--item_num', type=int, default=3952, help='item num')
     parser.add_argument('--batch_size', type=int, default=500, help='batch size')
