@@ -39,7 +39,7 @@ class LFM(object):
         self.predict = tf.reshape(tf.concat(predict, 0), [self.batch_size])
 
         self.global_step = tf.Variable(0, dtype=tf.int32, name="global_sep", trainable=False)
-        self.loss = tf.reduce_mean(tf.square(self.predict - self.score), name="loss")
+        self.loss = tf.reduce_mean(tf.square(self.predict - self.score), name="loss") + tf.reduce_sum(tf.square(select_user_mat)) + tf.reduce_sum(tf.square(select_item_mat))
         tf.summary.scalar("loss", self.loss)
         self.optimizer = tf.train.AdamOptimizer(1e-3)
         self.train = self.optimizer.apply_gradients(self.optimizer.compute_gradients(self.loss), global_step=self.global_step)
