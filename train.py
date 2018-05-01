@@ -28,6 +28,7 @@ def shuffle_file(origin, destination):
 
 class Trainer(object):
     def __init__(self, args):
+        self.args = args
         self.model_time = int(time.time()) if args.model_time == None else args.model_time
         self.model_path = "model/" + str(self.model_time) + "/"
         self.model_data_path = self.model_path + "data/"
@@ -42,7 +43,7 @@ class Trainer(object):
         self.hidden_dim = args.hidden_dim
         self.validate_epoch = args.validate_epoch
         self.checkpoint_epoch = args.checkpoint_epoch
-        self.lfm = LFM(user_num=args.user_num, item_num=args.item_num, batch_size=args.batch_size, hidden_dim=args.hidden_dim)
+        self.lfm = LFM(user_num=args.user_num, item_num=args.item_num, batch_size=args.batch_size, hidden_dim=args.hidden_dim, learning_rate=args.learning_rate)
         self.check_model_path()
 
     def model_parameter(self):
@@ -54,7 +55,9 @@ class Trainer(object):
                 os.mkdir(_path)
 
     def train(self):
-        with tf.Session() as sess:
+        tf_config = tf.ConfigProto()
+        tf_config.gpu_options.per_process_gpu_memory_fraction = args.gpu_use_rate
+        with tf.Session(config=tf_config) as sess:
             sess.run(tf.global_variables_initializer())
             file_writer = tf.summary.FileWriter(self.summary_path, sess.graph)
             merged = tf.summary.merge_all()
@@ -102,9 +105,12 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', type=int, default=500, help='batch size')
     parser.add_argument('--hidden_dim', type=int, default=20, help='hidden dim')
     parser.add_argument('--max_epoch', type=int, default=20, help='opoch num')
-    parser.add_argument('--validate_epoch', type=int, default=300, help='validate opoch num')
+    parser.add_argument('--validate_epoch', type=int, default=2000, help='validate opoch num')
     parser.add_argument('--checkpoint_epoch', type=int, default=500, help='checkpoint opoch num')
     parser.add_argument('--model_time', type=str, default=None, help='time when training new model')
+    parser.add_argument('--gpu_use_rate', type=float, default=0.38, help='GPU memory using rate per process')
+    parser.add_argument('--learning_rate', type=float, default=0.1, help='learning rate')
+    parser.add_argument('--decay', type=float, default=0.5, help='learning decay rate per 2000 batch')
     args = parser.parse_args()
 
     trainer = Trainer(args)

@@ -6,11 +6,13 @@
 import tensorflow as tf
 
 class LFM(object):
-    def __init__(self, user_num=1000, item_num=2000, batch_size=60, hidden_dim=10):
+    def __init__(self, user_num=1000, item_num=2000, batch_size=60, hidden_dim=10, learning_rate=0.1, decay=0.5):
         self.user_num = user_num
         self.item_num = item_num
         self.batch_size = batch_size
         self.hidden_dim = hidden_dim
+        self.learning_rate = learning_rate
+        self.decay = decay
         self.build_graph()
 
     def build_graph(self):
@@ -40,9 +42,10 @@ class LFM(object):
 
         self.global_step = tf.Variable(0, dtype=tf.int32, name="global_sep", trainable=False)
         self.loss = tf.reduce_mean(tf.square(self.predict - self.score), name="loss")
-        self.l2_loss = self.loss + tf.reduce_sum(tf.square(select_user_mat)) + tf.reduce_sum(tf.square(select_item_mat))
+        self.l2_loss = self.loss + tf.reduce_mean(tf.square(select_user_mat)) + tf.reduce_mean(tf.square(select_item_mat))
         tf.summary.scalar("loss", self.loss)
-        self.optimizer = tf.train.AdamOptimizer(1e-3)
+        learning_rate = tf.train.exponential_decay(self.learning_rate, self.global_step, 2000, self.decay, staircase=False)
+        self.optimizer = tf.train.AdamOptimizer(learning_rate)
         self.train = self.optimizer.apply_gradients(self.optimizer.compute_gradients(self.l2_loss), global_step=self.global_step)
 
         self.saver = tf.train.Saver(tf.global_variables())
